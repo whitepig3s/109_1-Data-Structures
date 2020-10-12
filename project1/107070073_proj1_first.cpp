@@ -87,7 +87,7 @@ bool O_arr[2][2]{
     1, 1,
     1, 1};
 
-enum blocks {
+/*enum blocks {
     T1,T2,T3,T4,
     L1,L2,L3,L4,
     J1,J2,J3,J4,
@@ -95,7 +95,7 @@ enum blocks {
     Z1,Z2,
     I1,I2,
     O
-};
+};*/
 
 int main(int argc, char *argv[])
 {
@@ -138,7 +138,12 @@ int main(int argc, char *argv[])
             point = stoi(v[1]);
             move = stoi(v[2]);
             //cout << v[0] << " " << point << " " << move << endl;
+            if (v[0].compare("O")==0)
+                cout<<"test";
 
+
+
+                
 
         }
     } while (!file.eof());
