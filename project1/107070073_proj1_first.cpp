@@ -203,15 +203,30 @@ int shift(int pm /*point+move*/, int a /*assign*/)
     return a + 1;
 }
 
-void clear_row(int p, int columns)
+void clear_row(int rows, int columns,int a)
 {
     bool check = 1;
-
-    for (int i = 0; i < columns; i++)
+    bool del[4]{false};
+    int k=0;
+    for (int i = a; i < a+4; i++){ //找row
         for (int j = 0; j < columns; j++)
         {
             check = table[i][j] & check;
+            
         }
+        if (check==1)
+            del[k]=1;
+            //cout<<"del0"<<del[k]<<endl;
+        k++;
+    }
+    for(int i=0;i<4;i++){ //delete
+        if(del[i]==1){
+            for(int j=0;j<columns;j++)
+                table[a+i][j]=0;
+        }
+    }
+    
+
 }
 
 void print_table(int rows, int columns)
@@ -335,7 +350,7 @@ int main(int argc, char *argv[])
             int assign = find_point(point, m, n);
             assign = shift(point + move, assign);
             put(assign, point + move);
-            
+            clear_row(m,n,assign);
         }
 
     } while (!file.eof() && line != "End");
