@@ -185,6 +185,35 @@ void put(int a /*可以從哪個row開始放*/, int b /*point*/)
     }
 }
 
+int shift(int pm /*point+move*/, int a /*assign*/)
+{
+    bool check=0;
+    do
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (table[a + i][pm + j] && ref[i][j])
+                    check = 1;
+            }
+        }
+        a--;
+    } while (check==1);
+    return a+1;
+}
+
+void clear_row(int p, int columns)
+{
+    bool check = 1;
+
+    for (int i = 0; i < columns; i++)
+        for (int j = 0; j < columns; j++)
+        {
+            check = table[i][j] && check;
+        }
+}
+
 void print_table(int rows, int columns)
 {
     /*for (int i = m-1; i >=0; i--) //re print array
@@ -304,15 +333,19 @@ int main(int argc, char *argv[])
                 ref_cpy(O_arr);
             }
 
-            int a = find_point(point, m, n);
-            cout << a << endl;
-            put(a, point);
+            int assign = find_point(point, m, n);
+            if (move != 0)
+            {
+                assign = shift(point + move, assign);
+            }
+            //cout << a << endl;
+            put(assign, point+move);
             print_table(m, n);
             cout << endl;
         }
 
     } while (!file.eof());
-    //print_table(m,n);
+    print_table(m,n);
     file.close();
     return 0;
 }
