@@ -141,20 +141,66 @@ void ref_print()
     }
 }
 
-//int find(int p, int n /*row*/) //return 在個row可以停下來
-//{                              //找哪邊可以放
-//while ()
-//{
-/* code */
-//}
-/*for (int i = m-1; i >=0; i--)
+int find_point(int p /*point*/, int rows, int columns) //return 在個row可以停下來
+{
+    int out = 0;
+    for (int i = rows - 1; i >= 0; i--)
     {
-        for (int j = 0; j < n; j++
-        )
+        int t = columns - p + 1;
+        if (t > 4)
+        {
+            t = 4;
+        }
+        bool check = 0;
+        for (int k = 0; k < t; k++)
+        {
+            for (int r = 0; r < 4; r++)
+            {
+                if (table[i][p - 1 + k] && ref[r][k])
+                    check = 1;
+            }
+        }
+        if (check == 1)
+        {
+            out = i + 1;
+            break;
+        }
+    }
+    return out;
+}
+
+void put(int a /*可以從哪個row開始放*/, int b /*point*/)
+{ //放進table
+    int k = 0;
+    for (int i = a; i < a + 4; i++)
+    {
+        int p = 0;
+        for (int j = b - 1; j < b + 3; j++)
+        {
+            if (table[i][j] != 1)
+                table[i][j] = ref[k][p];
+            p++;
+        }
+        k++;
+    }
+}
+
+void print_table(int rows, int columns)
+{
+    /*for (int i = m-1; i >=0; i--) //re print array
+    {
+        for (int j = 0; j < n; j++)
             //cout << i * 10 + j << " ";
             cout << *(table+i * n + j )<< " ";
+        cout << endl;
     }*/
-//}
+    for (int i = rows - 1; i >= 0; i--) //re print array
+    {
+        for (int j = 0; j < columns; j++)
+            cout << table[i][j] << " ";
+        cout << endl;
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -166,21 +212,6 @@ int main(int argc, char *argv[])
     for (int i = 0; i < m; i++)
         for (int j = 0; j < n; j++)
             *(table + i * n + j) = false;*/
-
-    /*for (int i = 0; i < m; i++) //print array
-    {
-        for (int j = 0; j < n; j++)
-            cout << *(table + i * n + j) << " ";
-        cout << endl;
-    }*/
-
-    /*for (int i = m-1; i >=0; i--) //re print array
-    {
-        for (int j = 0; j < n; j++)
-            //cout << i * 10 + j << " ";
-            cout << *(table+i * n + j )<< " ";
-        cout << endl;
-    }*/
 
     string line;
     getline(file, line); //要把換行吃掉
@@ -256,7 +287,7 @@ int main(int argc, char *argv[])
             {
                 ref_cpy(Z1_arr);
             }
-            else if (v[0].compare("JZ") == 0)
+            else if (v[0].compare("Z2") == 0)
             {
                 ref_cpy(Z2_arr);
             }
@@ -272,10 +303,16 @@ int main(int argc, char *argv[])
             {
                 ref_cpy(O_arr);
             }
-            
-        }
-    } while (!file.eof());
 
+            int a = find_point(point, m, n);
+            cout << a << endl;
+            put(a, point);
+            print_table(m, n);
+            cout << endl;
+        }
+
+    } while (!file.eof());
+    //print_table(m,n);
     file.close();
     return 0;
 }
