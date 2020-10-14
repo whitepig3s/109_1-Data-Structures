@@ -130,13 +130,24 @@ void ref_cpy(bool block[][4])
         for (int j = 0; j < 4; j++)
             ref[i][j] = block[i][j];
 }
+
+void ref_print()
+{
+    for (int i = 3; i >= 0; i--)
+    {
+        for (int j = 0; j < 4; j++)
+            cout << ref[i][j] << ' ';
+        cout << endl;
+    }
+}
+
 //int find(int p, int n /*row*/) //return 在個row可以停下來
 //{                              //找哪邊可以放
-    //while ()
-    //{
-    /* code */
-    //}
-    /*for (int i = m-1; i >=0; i--)
+//while ()
+//{
+/* code */
+//}
+/*for (int i = m-1; i >=0; i--)
     {
         for (int j = 0; j < n; j++
         )
@@ -185,19 +196,83 @@ int main(int argc, char *argv[])
             move = stoi(v[2]);
             clear_ref();
 
-            if (v[0].compare("I1") == 0)
+            if (v[0].compare("T1") == 0)
             {
                 ref_cpy(T1_arr);
-                for (int i = 3; i >= 0; i--)
-                {
-                    for (int j = 0; j < 4; j++)
-                        cout << ref[i][j] << ' ';
-                    cout << endl;
-                }
             }
             else if (v[0].compare("T2") == 0)
             {
+                ref_cpy(T2_arr);
             }
+            else if (v[0].compare("T3") == 0)
+            {
+                ref_cpy(T3_arr);
+            }
+            else if (v[0].compare("T4") == 0)
+            {
+                ref_cpy(T4_arr);
+            }
+            else if (v[0].compare("L1") == 0)
+            {
+                ref_cpy(L1_arr);
+            }
+            else if (v[0].compare("L2") == 0)
+            {
+                ref_cpy(L2_arr);
+            }
+            else if (v[0].compare("L3") == 0)
+            {
+                ref_cpy(L3_arr);
+            }
+            else if (v[0].compare("L4") == 0)
+            {
+                ref_cpy(L4_arr);
+            }
+            else if (v[0].compare("J1") == 0)
+            {
+                ref_cpy(J1_arr);
+            }
+            else if (v[0].compare("J2") == 0)
+            {
+                ref_cpy(J2_arr);
+            }
+            else if (v[0].compare("J3") == 0)
+            {
+                ref_cpy(J3_arr);
+            }
+            else if (v[0].compare("J4") == 0)
+            {
+                ref_cpy(J4_arr);
+            }
+            else if (v[0].compare("S1") == 0)
+            {
+                ref_cpy(S1_arr);
+            }
+            else if (v[0].compare("S2") == 0)
+            {
+                ref_cpy(S2_arr);
+            }
+            else if (v[0].compare("Z1") == 0)
+            {
+                ref_cpy(Z1_arr);
+            }
+            else if (v[0].compare("JZ") == 0)
+            {
+                ref_cpy(Z2_arr);
+            }
+            else if (v[0].compare("I1") == 0)
+            {
+                ref_cpy(I1_arr);
+            }
+            else if (v[0].compare("I2") == 0)
+            {
+                ref_cpy(I2_arr);
+            }
+            else if (v[0].compare("O") == 0)
+            {
+                ref_cpy(O_arr);
+            }
+            
         }
     } while (!file.eof());
 
