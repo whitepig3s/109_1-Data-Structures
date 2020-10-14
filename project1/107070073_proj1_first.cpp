@@ -50,8 +50,8 @@ bool L2_arr[4][4]{
     0, 0, 0, 0,
     0, 0, 0, 0};
 bool L3_arr[4][4]{
-    1, 0, 0, 0,
-    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 1, 0, 0,
     1, 1, 0, 0,
     0, 0, 0, 0};
 bool L4_arr[4][4]{
@@ -177,8 +177,8 @@ void put(int a /*可以從哪個row開始放*/, int b /*point*/)
         int p = 0;
         for (int j = b - 1; j < b + 3; j++)
         {
-            if (table[i][j] != 1)
-                table[i][j] = ref[k][p];
+            if (ref[k][p]== 1)
+                table[i][j] = 1;
             p++;
         }
         k++;
@@ -199,6 +199,7 @@ int shift(int pm /*point+move*/, int a /*assign*/)
             }
         }
         a--;
+        cout<<a<<endl;
     } while (check==1);
     return a+1;
 }
@@ -334,11 +335,10 @@ int main(int argc, char *argv[])
             }
 
             int assign = find_point(point, m, n);
-            if (move != 0)
-            {
+            //if (1)
+            //{
                 assign = shift(point + move, assign);
-            }
-            //cout << a << endl;
+            //}
             put(assign, point+move);
             print_table(m, n);
             cout << endl;
