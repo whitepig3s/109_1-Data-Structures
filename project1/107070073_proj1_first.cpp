@@ -224,7 +224,7 @@ void clear_row(int rows, int columns, int a)
         }
     }*/
 
-    for (int i = a+3; i >=a; i--)
+    for (int i = a + 3; i >= a; i--)
     {
         bool check = 1;
         for (int j = 0; j < columns; j++)
@@ -236,10 +236,10 @@ void clear_row(int rows, int columns, int a)
             for (int j = i; j < rows; j++)
             {
                 for (int k = 0; k < columns; k++)
-                    table[j][k] =  table[j+1][k];
+                    table[j][k] = table[j + 1][k];
             }
-        for (int j = 0; j < columns; j++)
-            table[rows-1][j]=0;
+            for (int j = 0; j < columns; j++)
+                table[rows - 1][j] = 0;
         }
     }
 }
@@ -369,7 +369,14 @@ int main(int argc, char *argv[])
         }
 
     } while (!file.eof() && line != "End");
-    print_table(m, n);
     file.close();
+    ofstream ofile("107070073_proj1.final", ios::out);
+    for (int i = m - 1; i >= 0; i--) 
+    {
+        for (int j = 0; j < n; j++)
+            ofile << table[i][j] << " ";
+        ofile << endl;
+    }
+    ofile.close();
     return 0;
 }
