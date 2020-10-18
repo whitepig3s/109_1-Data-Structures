@@ -205,25 +205,6 @@ int shift(int pm /*point+move*/, int a /*assign*/)
 
 void clear_row(int rows, int columns, int a)
 {
-    //bool check = 1;
-    //bool del[4]{false};
-    //int k=0;
-    /*for (int i = a; i < a+4; i++){ //找row
-        for (int j = 0; j < columns; j++)
-        {
-            check = table[i][j] & check;
-        }
-        if (check==1)
-            del[k]=1;
-        k++;
-    }
-    for(int i=0;i<4;i++){ //delete
-        if(del[i]==1){
-            for(int j=0;j<columns;j++)
-                table[a+i][j]=0;
-        }
-    }*/
-
     for (int i = a + 3; i >= a; i--)
     {
         bool check = 1;
@@ -246,13 +227,6 @@ void clear_row(int rows, int columns, int a)
 
 void print_table(int rows, int columns)
 {
-    /*for (int i = m-1; i >=0; i--) //re print array
-    {
-        for (int j = 0; j < n; j++)
-            //cout << i * 10 + j << " ";
-            cout << *(table+i * n + j )<< " ";
-        cout << endl;
-    }*/
     for (int i = rows - 1; i >= 0; i--) //re print array
     {
         for (int j = 0; j < columns; j++)
@@ -266,11 +240,6 @@ int main(int argc, char *argv[])
     ifstream file(argv[1], ios::in);
     int m /*row*/, n /*column*/;
     file >> m >> n;
-
-    /*bool *table = new bool[m * n]; //declare dynamic 2D arr
-    for (int i = 0; i < m; i++)
-        for (int j = 0; j < n; j++)
-            *(table + i * n + j) = false;*/
     string line;
     getline(file, line); //要把換行吃掉
     do
