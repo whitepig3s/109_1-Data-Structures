@@ -215,16 +215,6 @@ void clear_row(int rows, int columns, int a)
     }
 }
 
-void print_table(int rows, int columns)
-{
-    for (int i = rows - 1; i >= 0; i--) //re print array
-    {
-        for (int j = 0; j < columns; j++)
-            cout << table[i][j] << " ";
-        cout << endl;
-    }
-}
-
 int main(int argc, char *argv[])
 {
     ifstream file(argv[1], ios::in);
