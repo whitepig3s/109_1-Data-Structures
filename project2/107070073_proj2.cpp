@@ -4,8 +4,6 @@
 #include <queue>
 using namespace std;
 
-int time = 0;
-
 char table[1000][1000] = {0};
 
 queue<struct Node> nodequeue;
@@ -59,7 +57,7 @@ public:
         int first = 4;
         for (int i = 0; i < 4; i++)
         {
-            if (n[i].exist == 1 && table[tmp_m][tmp_n] != '2')
+            if (n[i].exist == 1)
             {
                 nodequeue.push(n[i]);
                 if (first == 4)
@@ -71,24 +69,14 @@ public:
                     n[last].sibling = &n[i];
                 }
                 last = i;
-                table[tmp_m][tmp_n] = '2';
+                table[n[i].node_m][n[i].node_n] = '2';
             }
         }
+        cout <<tmp_m<<" "<<tmp_n<<" "<<nodequeue.size() << endl;  //加了這行就可以運作正常
         if (first < 4)
             return n[first];
         else
             return *(n[0].child); //return NULL
-    }
-    void recursion()
-    {
-        while (!nodequeue.empty())
-        {
-            Node n = nodequeue.front();
-            cout << n.node_m << " " << n.node_n << endl;
-            Node c = add_child(n.node_m, n.node_n);
-            n.child = &c;
-            nodequeue.pop();
-        }
     }
 
     void build_tree(int rm, int rn)
@@ -96,8 +84,15 @@ public:
         root = add_Node(rm, rn);
         Node c = add_child(rm, rn);
         root.child = &c;
-        recursion();
+        //while (!nodequeue.empty())
+        do{
+            Node n = nodequeue.front();
+            Node c = add_child(n.node_m, n.node_n);
+            n.child = &c;
+            nodequeue.pop();
+        }while (nodequeue.size()!=0);
         //cout << (root.child)->node_m << " " << (root.child)->node_n<< endl;
+        //cout << node->node_m << " " << node->node_n<<"->  "<<node->cnum << endl;
     }
 
     void print(void)
@@ -109,7 +104,6 @@ public:
     {
         if (node == NULL)
             return;
-        time++;
         printInorder(node->sibling);
         cout << node->node_m << " " << node->node_n << endl;
         printInorder(node->child);
@@ -143,9 +137,8 @@ main(int argc, char *argv[])
 
     binary_tree tree;
     tree.build_tree(Rm, Rn);
-    tree.print();
-    cout << time << endl;
-
+    //tree.print();
+    print_table(m, n);
     //ofstream ofile("107070073_proj2", ios::out);
 
     //ofile.close();
