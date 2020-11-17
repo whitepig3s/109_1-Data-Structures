@@ -32,7 +32,6 @@ class binary_tree
 private:
     Node root;
     Node blackhole;
-    bool full;
 
 public:
     Node add_Node(int tmp_m, int tmp_n)
@@ -45,7 +44,7 @@ public:
         tmp->exist = 0;
         if (tmp_m < t_m && tmp_n < t_n && tmp_m >= 0 && tmp_n >= 0)
         {
-            if (table[tmp_m][tmp_n] == '0')
+            if (table[tmp_m][tmp_n] == '0' || table[tmp_m][tmp_n] == 'R')
             {
                 tmp->exist = 1;
             }
@@ -55,7 +54,6 @@ public:
 
     Node add_child(int tmp_m, int tmp_n)
     {
-        full = 0;
         Node n[4];
         n[0] = add_Node(tmp_m + 1, tmp_n);
         n[1] = add_Node(tmp_m, tmp_n + 1);
@@ -68,7 +66,7 @@ public:
             if (n[i].exist == 1 && table[n[i].node_m][n[i].node_n] == '0')
             {
                 nodequeue.push(n[i]);
-                cout << n[i].node_m << " " << n[i].node_n << " " << endl;
+                cout << i << " " << n[i].node_m << " " << n[i].node_n << endl;
                 if (first == 4)
                 {
                     first = i;
@@ -81,35 +79,32 @@ public:
                 table[n[i].node_m][n[i].node_n] = '2';
             }
         }
-        //cout <<tmp_m<<" "<<tmp_n<<" "<<nodequeue.size() << endl;  //加了這行就可以運作正常
-        cout<<"re"<<endl;
+        cout << "f" << n[first].node_m << " " << n[first].node_n << endl;
+        cout << "first" << first << endl;
+        cout << "last" << last << endl;
         if (first < 4)
             return n[first];
         else
-        {
-            cout<<"test"<<endl;
-            full = 1;
-            //return *(n[0].child); //return NULL
             return blackhole;
-        }
     }
 
     void build_tree(int rm, int rn)
     {
-        root.node_m = rm;
-        root.node_n = rn;
+        blackhole.node_m = -5;
+        blackhole.node_n = -5;
+        root = add_Node(rm, rn);
         Node c = add_child(rm, rn);
         root.child = &c;
+        //cout << (root.child)->node_m << " " << (root.child)->node_n << endl;
         while (!nodequeue.empty())
         {
             Node n = nodequeue.front();
-            cout<<"fornt "<<n.node_m<<" "<<n.node_n<<endl;
             c = add_child(n.node_m, n.node_n);
-             cout<<"test2"<<endl;
-            if (full == 0)
+            if (!(c.node_m == -5 && c.node_n == -5))
             {
-                //c = add_child(n.node_m, n.node_n);
                 n.child = &c;
+                cout << "black" << (n.child)->node_m << " " << (n.child)->node_n << endl
+                     << endl;
             }
             nodequeue.pop();
         }
@@ -117,16 +112,17 @@ public:
 
     void print(void)
     {
-        printInorder(&root);
+        printInorder(root);
     }
 
-    void printInorder(Node *node)
+    void printInorder(Node node)
     {
-        if (node == NULL)
+
+        if (&node == NULL)
             return;
-        printInorder(node->sibling);
-        cout << node->node_m << " " << node->node_n << endl;
-        printInorder(node->child);
+        printInorder(*node.child);
+        cout << node.node_m << " " << node.node_n << endl;
+        printInorder(*node.sibling);
     }
 };
 
@@ -160,7 +156,7 @@ main(int argc, char *argv[])
     binary_tree tree;
     tree.build_tree(Rm, Rn);
     //tree.print();
-    print_table(m, n);
+    //print_table(m, n);
     //ofstream ofile("107070073_proj2", ios::out);
 
     //ofile.close();
