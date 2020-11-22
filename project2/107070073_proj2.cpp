@@ -21,7 +21,6 @@ class binary_tree
 private:
     map<int, int> mp;
     int battery;
-    int travel;
 
     struct Node
     {
@@ -42,9 +41,10 @@ private:
 
     priority_queue<Node, vector<Node>, Comparekey> Q;
     queue<Node> fwd;
-    queue<Node> back;
+    deque<Node> back;
 
 public:
+    int travel;
     binary_tree(int b)
     {
         battery = b;
@@ -87,20 +87,20 @@ public:
         find_node(tmp_m, tmp_n - 1);
         Node n = Q.top();
         fwd.push(n);
-        back.push(n);
+        back.push_back(n);
         if (n.value == 0)
         {
             travel++;
         }
         mp[n.key]++;
         //cout<<n.key<<" "<<mp[n.key]<<endl;
-        cout << "Q" << endl;
+        //cout << "Q" << endl;
         while (!Q.empty())
         {
-            cout << Q.top().key <<" "<<Q.top().value<< endl;
+            //cout << Q.top().key <<" "<<Q.top().value<< endl;
             Q.pop();
         }
-        cout << endl;
+        //cout << endl;
         //cout << n.key << " " << n.value << endl;
         return n.key;
     }
@@ -114,11 +114,17 @@ public:
             int tmp = add_node(k);
             k = tmp;
         }
-        /*while (!fwd.empty())
+        while (!fwd.empty())
         {
-            cout << fwd.front().key << endl;
+            //cout << fwd.front().key << endl;
             fwd.pop();
-        }*/
+        }
+        //cout<<endl;
+        while (!back.empty())
+        {
+            //cout << back.back().key << endl;
+            back.pop_back();
+        }
     }
 
     void print(void)
@@ -133,6 +139,9 @@ public:
     {
         int tmp = mp.empty();
         return !tmp;
+    }
+    int size(){
+        return mp.size()-1;
     }
 };
 
@@ -164,7 +173,19 @@ main(int argc, char *argv[])
     binary_tree tree(B);
     //print_table(m, n);
     tree.add_child(Rm, Rn);
-    tree.route(Rm, Rn);
+    int count=0;
+    while (tree.travel<tree.size())
+    {
+        count++;
+        cout<<"count"<<count<<endl;
+        cout<<"travel "<<tree.travel<<endl;
+        cout<<tree.size()<<endl;
+        tree.route(Rm, Rn);
+        //tree.print();
+        cout<<endl;
+    }
+    
+    
     /*while (tree.not_empty())
     {
         tree.route(Rm, Rn);
