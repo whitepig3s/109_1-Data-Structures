@@ -50,12 +50,12 @@ public:
         battery = b;
         travel = 0;
     }
+
     void add_child(int tmp_m, int tmp_n)
     {
         if (table[tmp_m][tmp_n] == '0' || table[tmp_m][tmp_n] == 'R')
         {
             table[tmp_m][tmp_n] = '2';
-            //cout << tmp_m << " " << tmp_n << endl;
             mp[tmp_m * 1000 + tmp_n] = 0;
             add_child(tmp_m + 1, tmp_n);
             add_child(tmp_m, tmp_n + 1);
@@ -76,8 +76,7 @@ public:
         }
     }
 
-    //int add_node(int tmp_m, int tmp_n)
-    int add_node(int tmp_k)
+    int select_node(int tmp_k)
     {
         int tmp_n = tmp_k % 1000;
         int tmp_m = tmp_k / 1000;
@@ -93,15 +92,10 @@ public:
             travel++;
         }
         mp[n.key]++;
-        //cout<<n.key<<" "<<mp[n.key]<<endl;
-        //cout << "Q" << endl;
         while (!Q.empty())
         {
-            //cout << Q.top().key <<" "<<Q.top().value<< endl;
             Q.pop();
         }
-        //cout << endl;
-        //cout << n.key << " " << n.value << endl;
         return n.key;
     }
 
@@ -109,20 +103,41 @@ public:
     {
         int k = tmp_m * 1000 + tmp_n;
         mp[k]++;
-        while (fwd.size() + back.size() <= battery)
+        while (fwd.size() + back.size() + 1 <= battery)
         {
-            int tmp = add_node(k);
+            int tmp = select_node(k);
             k = tmp;
         }
+    }
+
+    void write_route(int rm, int rn)
+    {
+        back.pop_back();
+        ofstream tmpfile("tmp", ios::app);
+        tmpfile << rm * 1000 + rn << endl;
+        int tmp_k;
         while (!fwd.empty())
         {
-            //cout << fwd.front().key << endl;
+            tmpfile << fwd.front().key << endl;
             fwd.pop();
         }
-        //cout<<endl;
         while (!back.empty())
         {
-            //cout << back.back().key << endl;
+            tmpfile << back.back().key << endl;
+            back.pop_back();
+        }
+        tmpfile.close();
+    }
+
+    void clear_queue()
+    {
+        while (!fwd.empty())
+        {
+            fwd.pop();
+        }
+        while (!back.empty())
+        {
+
             back.pop_back();
         }
     }
@@ -135,18 +150,24 @@ public:
         }
     }
 
-    int not_empty()
+    void print_zero(void)
     {
-        int tmp = mp.empty();
-        return !tmp;
+        for (auto it = mp.begin(); it != mp.end(); it++)
+        {
+            if (it->second == 0)
+                cout << it->first << " " << it->second << endl;
+        }
     }
-    int size(){
-        return mp.size()-1;
+
+    int size()
+    {
+        return mp.size() - 1;
     }
 };
 
 main(int argc, char *argv[])
 {
+    //----------input file
     ifstream file(argv[1], ios::in);
     int m /*row*/, n /*column*/, B /*battery*/;
     file >> m >> n >> B;
@@ -169,31 +190,54 @@ main(int argc, char *argv[])
         file.get();
     }
     file.close();
+    //==========input file
 
+    //----------build_tree && build_route
     binary_tree tree(B);
-    //print_table(m, n);
     tree.add_child(Rm, Rn);
-    int count=0;
-    while (tree.travel<tree.size())
+    int count = 0, last_count = 0;
+    while (tree.travel < tree.size())
     {
-        count++;
-        cout<<"count"<<count<<endl;
-        cout<<"travel "<<tree.travel<<endl;
-        cout<<tree.size()<<endl;
+        count = tree.travel;
         tree.route(Rm, Rn);
-        //tree.print();
-        cout<<endl;
+        if (count != last_count)
+            tree.write_route(Rm, Rn);
+        else
+            tree.clear_queue();
+        last_count = count;
     }
-    
-    
-    /*while (tree.not_empty())
+    //===========build_tree && build_route
+
+    //-----------計算行數
+    string tmps;
+    int lines = 0;
+    ifstream fin("tmp", ios::in);
+    while (getline(fin, tmps))
     {
-        tree.route(Rm, Rn);
-    }*/
+        lines = lines + 1;
+    }
+    fin.close();
+    //===========計算行數
 
-    //tree.print();
-    //ofstream ofile("107070073_proj2", ios::out);
+    //-----------寫入檔案
+    ofstream ofile("107070073_proj2", ios::out);
+    ifstream f("tmp", ios::in);
+    ofile << lines << endl;
+    int c = 0;
+    for (int i = 0; i < lines; i++)
+    {
+        int tmp_k;
+        f >> tmps;
+        tmp_k = stoi(tmps);
+        int tmp_n = tmp_k % 1000;
+        int tmp_m = tmp_k / 1000;
+        ofile << tmp_m << " " << tmp_n << endl;
+    }
+    f.close();
+    ofile << Rm << " " << Rn;
+    ofile.close();
+    remove("tmp");
+    //===========寫入檔案
 
-    //ofile.close();
     return 0;
 }
