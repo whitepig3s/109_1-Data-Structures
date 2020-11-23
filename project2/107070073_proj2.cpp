@@ -45,10 +45,12 @@ private:
 
 public:
     int travel;
-    binary_tree(int b)
+    int node_r;
+    binary_tree(int b, int rm, int rn)
     {
         battery = b;
         travel = 0;
+        node_r = rm * 1000 + rn;
     }
 
     void add_child(int tmp_m, int tmp_n)
@@ -96,6 +98,13 @@ public:
         {
             Q.pop();
         }
+        if (node_r == n.key)
+        {
+            while (!back.empty())
+            {
+                back.pop_back();
+            }
+        }
         return n.key;
     }
 
@@ -107,6 +116,10 @@ public:
         {
             int tmp = select_node(k);
             k = tmp;
+            if (travel == size())
+            {
+                break;
+            }
         }
     }
 
@@ -193,14 +206,14 @@ main(int argc, char *argv[])
     //==========input file
 
     //----------build_tree && build_route
-    binary_tree tree(B);
+    binary_tree tree(B, Rm, Rn);
     tree.add_child(Rm, Rn);
     int count = 0, last_count = 0;
     while (tree.travel < tree.size())
     {
         count = tree.travel;
         tree.route(Rm, Rn);
-        if (count != last_count)
+        if (count >= last_count)
             tree.write_route(Rm, Rn);
         else
             tree.clear_queue();
