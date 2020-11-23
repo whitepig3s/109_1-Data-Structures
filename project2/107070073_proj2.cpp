@@ -213,7 +213,9 @@ main(int argc, char *argv[])
     {
         count = tree.travel;
         tree.route(Rm, Rn);
-        if (count >= last_count)
+        if (count > last_count)
+            tree.write_route(Rm, Rn);
+        else if (tree.travel == tree.size())
             tree.write_route(Rm, Rn);
         else
             tree.clear_queue();
