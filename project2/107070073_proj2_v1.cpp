@@ -6,16 +6,6 @@ using namespace std;
 
 char table[1000][1000] = {0};
 
-void print_table(int rows, int columns)
-{
-    for (int i = 0; i < rows; i++)
-    {
-        for (int j = 0; j < columns; j++)
-            cout << table[i][j] << " ";
-        cout << endl;
-    }
-}
-
 class binary_tree
 {
 private:
@@ -45,10 +35,12 @@ private:
 
 public:
     int travel;
-    binary_tree(int b)
+    int node_r;
+    binary_tree(int b, int rm, int rn)
     {
         battery = b;
         travel = 0;
+        node_r = rm * 1000 + rn;
     }
 
     void add_child(int tmp_m, int tmp_n)
@@ -96,6 +88,13 @@ public:
         {
             Q.pop();
         }
+        if (node_r == n.key)
+        {
+            while (!back.empty())
+            {
+                back.pop_back();
+            }
+        }
         return n.key;
     }
 
@@ -107,6 +106,10 @@ public:
         {
             int tmp = select_node(k);
             k = tmp;
+            if (travel == size())
+            {
+                break;
+            }
         }
     }
 
@@ -139,23 +142,6 @@ public:
         {
 
             back.pop_back();
-        }
-    }
-
-    void print(void)
-    {
-        for (auto it = mp.begin(); it != mp.end(); it++)
-        {
-            cout << it->first << " " << it->second << endl;
-        }
-    }
-
-    void print_zero(void)
-    {
-        for (auto it = mp.begin(); it != mp.end(); it++)
-        {
-            if (it->second == 0)
-                cout << it->first << " " << it->second << endl;
         }
     }
 
@@ -193,14 +179,16 @@ main(int argc, char *argv[])
     //==========input file
 
     //----------build_tree && build_route
-    binary_tree tree(B);
+    binary_tree tree(B, Rm, Rn);
     tree.add_child(Rm, Rn);
     int count = 0, last_count = 0;
     while (tree.travel < tree.size())
     {
         count = tree.travel;
         tree.route(Rm, Rn);
-        if (count != last_count)
+        if (count > last_count)
+            tree.write_route(Rm, Rn);
+        else if (tree.travel == tree.size())
             tree.write_route(Rm, Rn);
         else
             tree.clear_queue();
