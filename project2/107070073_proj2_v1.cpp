@@ -4,13 +4,12 @@
 #include <map>
 using namespace std;
 
-char table[1000][1000] = {0};
-
 class binary_tree
 {
 private:
     map<int, int> mp;
     int battery;
+    int node_r;
 
     struct Node
     {
@@ -35,31 +34,30 @@ private:
 
 public:
     int travel;
-    int node_r;
-    binary_tree(int b, int rm, int rn)
+    binary_tree(int b)
     {
         battery = b;
         travel = 0;
-        node_r = rm * 1000 + rn;
     }
 
-    void add_child(int tmp_m, int tmp_n)
+    int trans(int tmp_m, int tmp_n)
     {
-        if (table[tmp_m][tmp_n] == '0' || table[tmp_m][tmp_n] == 'R')
-        {
-            table[tmp_m][tmp_n] = '2';
-            mp[tmp_m * 1000 + tmp_n] = 0;
-            add_child(tmp_m + 1, tmp_n);
-            add_child(tmp_m, tmp_n + 1);
-            add_child(tmp_m - 1, tmp_n);
-            add_child(tmp_m, tmp_n - 1);
-        }
-        return;
+        return tmp_m * 1000 + tmp_n;
+    }
+
+    void set_Root(int rm, int rn)
+    {
+        node_r = trans(rm, rn);
+    }
+
+    void add_node(int tmp_m, int tmp_n)
+    {
+        mp[trans(tmp_m, tmp_n)] = 0;
     }
 
     void find_node(int tmp_m, int tmp_n)
     {
-        int key = tmp_m * 1000 + tmp_n;
+        int key = trans(tmp_m, tmp_n);
         auto iter = mp.find(key);
         if (iter != mp.end())
         {
@@ -80,36 +78,28 @@ public:
         fwd.push(n);
         back.push_back(n);
         if (n.value == 0)
-        {
             travel++;
-        }
         mp[n.key]++;
         while (!Q.empty())
-        {
             Q.pop();
-        }
         if (node_r == n.key)
         {
             while (!back.empty())
-            {
                 back.pop_back();
-            }
         }
         return n.key;
     }
 
     void route(int tmp_m, int tmp_n)
     {
-        int k = tmp_m * 1000 + tmp_n;
+        int k = trans(tmp_m, tmp_n);
         mp[k]++;
         while (fwd.size() + back.size() + 1 <= battery)
         {
             int tmp = select_node(k);
             k = tmp;
             if (travel == size())
-            {
                 break;
-            }
         }
     }
 
@@ -135,13 +125,17 @@ public:
     void clear_queue()
     {
         while (!fwd.empty())
-        {
             fwd.pop();
-        }
         while (!back.empty())
-        {
-
             back.pop_back();
+    }
+
+    void print_zero(void)
+    {
+        for (auto it = mp.begin(); it != mp.end(); it++)
+        {
+            if (it->second == 0)
+                cout << it->first << " " << it->second << endl;
         }
     }
 
@@ -157,8 +151,8 @@ main(int argc, char *argv[])
     ifstream file(argv[1], ios::in);
     int m /*row*/, n /*column*/, B /*battery*/;
     file >> m >> n >> B;
-    string line;
     file.get();
+    binary_tree tree(B);
     int Rm, Rn;
     for (int i = 0; i < m; i++)
     {
@@ -166,21 +160,23 @@ main(int argc, char *argv[])
         for (int j = 0; j < n; j++)
         {
             file >> tmp;
-            table[i][j] = tmp;
-            if (tmp == 'R')
+            if (tmp == '0' || tmp == 'R')
             {
-                Rm = i;
-                Rn = j;
+                tree.add_node(i, j);
+                if (tmp == 'R')
+                {
+                    Rm = i;
+                    Rn = j;
+                }
             }
         }
         file.get();
     }
+    tree.set_Root(Rm, Rn);
     file.close();
     //==========input file
 
-    //----------build_tree && build_route
-    binary_tree tree(B, Rm, Rn);
-    tree.add_child(Rm, Rn);
+    //----------build_route
     int count = 0, last_count = 0;
     while (tree.travel < tree.size())
     {
@@ -194,25 +190,22 @@ main(int argc, char *argv[])
             tree.clear_queue();
         last_count = count;
     }
-    //===========build_tree && build_route
+    //===========build_route
 
     //-----------計算行數
     string tmps;
-    int lines = 0;
+    count = 0;
     ifstream fin("tmp", ios::in);
     while (getline(fin, tmps))
-    {
-        lines = lines + 1;
-    }
+        count++;
     fin.close();
     //===========計算行數
 
     //-----------寫入檔案
     ofstream ofile("107070073_proj2", ios::out);
     ifstream f("tmp", ios::in);
-    ofile << lines << endl;
-    int c = 0;
-    for (int i = 0; i < lines; i++)
+    ofile << count << endl;
+    for (int i = 0; i < count; i++)
     {
         int tmp_k;
         f >> tmps;
