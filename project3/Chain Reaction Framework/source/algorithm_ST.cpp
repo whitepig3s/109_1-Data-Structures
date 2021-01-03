@@ -69,19 +69,10 @@ public:
 
 bool Board_c::place_orb(int i, int j, char color)
 {
-
-    //if (index_range_illegal(i, j) || !placement_illegal(*player, cells[i][j]))
-    //{
     int temp = cells[i][j].get_orbs_num();
     temp += 1;
     cells[i][j].set_orbs_num(temp);
     cells[i][j].set_color(color);
-    /*}
-    else
-    {
-        player->set_illegal();
-        return false;
-    }*/
 
     if (cell_is_full(&cells[i][j]))
     {
@@ -293,10 +284,6 @@ void Board_c::print_current_board(int i, int j)
 
     int orb_num;
     char symbol;
-
-    ////// Print out the current state of the board //////
-    //system(CLEAR);
-    //cout << "Round: " << round << endl;
     cout << "Place orb on (" << i << ", " << j << ")" << endl;
     cout << "=============================================================" << endl;
     for (int i = 0; i < ROW; i++)
@@ -353,23 +340,45 @@ void Board_c::print_current_board(int i, int j)
 }
 
 //----------
+
 int minimax(Board_c miniboard, int depth, char color, bool master)
 {
     int bvalue;
     char enemy = (color == 'r') ? 'b' : 'r';
     if (depth == 0)
     {
+        int orb_num = 0;
+        /*for (int i = 0; i < ROW; i++)
+        {
+            for (int j = 0; j < COL; j++)
+            {
+                if (miniboard.get_cell_color(i, j) == color)
+                {
+                    orb_num = orb_num + miniboard.get_orbs_num(i, j);
+                }
+            }
+        }*/
+
+        if (master == true)
+        {
+            return orb_num;
+        }
+        else
+        {
+            return -orb_num;
+        }
+
         return 0;
     }
     if (master == true)
     {
         if (miniboard.win_the_game(enemy))
         {
-            return -1;
+            return -10000 * depth;
         }
         else if (miniboard.win_the_game(color))
         {
-            return 1;
+            return 10000 * depth;
         }
         for (int i = 0; i < ROW; i++)
         {
@@ -377,10 +386,11 @@ int minimax(Board_c miniboard, int depth, char color, bool master)
             {
                 if (miniboard.get_cell_color(i, j) == color || miniboard.get_cell_color(i, j) == 'w')
                 {
-                    bvalue = -2;
+                    bvalue = -20000;
                     Board_c tmpboard(miniboard);
                     miniboard.place_orb(i, j, color);
                     //miniboard.print_current_board(i,j);
+                    cout << depth << " " << i << " " << j << " 0 " << color << endl;
                     int value = minimax(miniboard, depth - 1, enemy, false);
                     miniboard.reset_boardc(tmpboard);
                     //cout << depth << " " << i << " " << j << " 0 " << color << " " << value << endl;
@@ -397,11 +407,11 @@ int minimax(Board_c miniboard, int depth, char color, bool master)
     {
         if (miniboard.win_the_game(enemy))
         {
-            return 1;
+            return 10000 * depth;
         }
         else if (miniboard.win_the_game(color))
         {
-            return -1;
+            return -10000 * depth;
         }
         for (int i = 0; i < ROW; i++)
         {
@@ -409,10 +419,11 @@ int minimax(Board_c miniboard, int depth, char color, bool master)
             {
                 if (miniboard.get_cell_color(i, j) == color || miniboard.get_cell_color(i, j) == 'w')
                 {
-                    bvalue = 2;
+                    bvalue = 20000;
                     Board_c tmpboard(miniboard);
                     miniboard.place_orb(i, j, color);
                     //miniboard.print_current_board(i,j);
+                    cout << depth << " " << i << " " << j << " 1 " << color << endl;
                     int value = minimax(miniboard, depth - 1, enemy, true);
                     miniboard.reset_boardc(tmpboard);
                     //cout << depth << " " << i << " " << j << " 1 " << color << " " << value << endl;
@@ -476,10 +487,7 @@ void algorithm_A(Board board, Player player, int index[])
             return;
         }
     }
-    int dep = 100;
-    int win = -2;
-    int zero[30] = {0};
-    int zero_count = 0;
+    int win = -20000;
     for (int i = 0; i < ROW; i++)
     {
         for (int j = 0; j < COL; j++)
@@ -493,36 +501,8 @@ void algorithm_A(Board board, Player player, int index[])
                 {
                     row = i;
                     col = j;
-                    if (tmp == 0)
-                    {
-                        zero[zero_count] = i * 10 + j;
-                        zero_count++;
-                    }
                 }
             }
-        }
-    }
-    if (win == 1)
-    {
-        index[0] = row;
-        index[1] = col;
-        return;
-    }
-    else if (win == 0)
-    {
-        int tmp = rand() % zero_count;
-        index[0] = tmp / 10;
-        index[1] = tmp % 10;
-    }
-    else
-    {
-        cout << "Random" << endl;
-        while (1)
-        {
-            row = rand() % 5;
-            col = rand() % 6;
-            if (board.get_cell_color(row, col) == color || board.get_cell_color(row, col) == 'w')
-                break;
         }
     }
     index[0] = row;
