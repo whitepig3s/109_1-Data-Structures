@@ -54,15 +54,16 @@ private:
 
 public:
     Board_c(Board board);
-
+    int orb_count;
     // The basic functions of the Board
     int get_orbs_num(int i, int j);
     int get_capacity(int i, int j);
     char get_cell_color(int i, int j);
+    void reset_board(Board board);
+    void reset_boardc(Board_c board);
 
-    bool place_orb(int i, int j, char color);          // Use this function to place a orb into a cell
-    void print_current_board(int i, int j, int round); // Print out the current state of the hole board
-
+    bool place_orb(int i, int j, char color); // Use this function to place a orb into a cell
+    void print_current_board(int i, int j);
     bool win_the_game(char color); // The function that is used to check wether the player wins the game after his/her placemnet operation
 };
 
@@ -244,18 +245,7 @@ char Board_c::get_cell_color(int i, int j)
 
 Board_c::Board_c(Board board)
 {
-
-    ////// Initialize the borad with correct capacity //////
-    // The corners of the board
-    cells[0][0].set_capacity(3), cells[0][5].set_capacity(3),
-        cells[4][0].set_capacity(3), cells[4][5].set_capacity(3);
-
-    // The edges of the board
-    cells[0][1].set_capacity(5), cells[0][2].set_capacity(5), cells[0][3].set_capacity(5), cells[0][4].set_capacity(3),
-        cells[1][0].set_capacity(5), cells[2][0].set_capacity(5), cells[3][0].set_capacity(5),
-        cells[1][5].set_capacity(5), cells[2][5].set_capacity(5), cells[3][5].set_capacity(5),
-        cells[4][1].set_capacity(5), cells[4][2].set_capacity(5), cells[4][3].set_capacity(5), cells[4][4].set_capacity(3);
-
+    orb_count = 0;
     for (int i = 0; i < ROW; i++)
     {
         for (int j = 0; j < COL; j++)
@@ -263,53 +253,279 @@ Board_c::Board_c(Board board)
             cells[i][j].set_color(board.get_cell_color(i, j));
             cells[i][j].set_capacity(board.get_capacity(i, j));
             cells[i][j].set_orbs_num(board.get_orbs_num(i, j));
+            orb_count = orb_count + board.get_orbs_num(i, j);
         }
     }
 }
 
+void Board_c::reset_board(Board board)
+{
+    orb_count = 0;
+    for (int i = 0; i < ROW; i++)
+    {
+        for (int j = 0; j < COL; j++)
+        {
+            cells[i][j].set_color(board.get_cell_color(i, j));
+            cells[i][j].set_capacity(board.get_capacity(i, j));
+            cells[i][j].set_orbs_num(board.get_orbs_num(i, j));
+            orb_count = orb_count + board.get_orbs_num(i, j);
+        }
+    }
+}
+
+void Board_c::reset_boardc(Board_c board)
+{
+    orb_count = 0;
+    for (int i = 0; i < ROW; i++)
+    {
+        for (int j = 0; j < COL; j++)
+        {
+            cells[i][j].set_color(board.get_cell_color(i, j));
+            cells[i][j].set_capacity(board.get_capacity(i, j));
+            cells[i][j].set_orbs_num(board.get_orbs_num(i, j));
+            orb_count = orb_count + board.get_orbs_num(i, j);
+        }
+    }
+}
+
+void Board_c::print_current_board(int i, int j)
+{
+
+    int orb_num;
+    char symbol;
+
+    ////// Print out the current state of the board //////
+    //system(CLEAR);
+    //cout << "Round: " << round << endl;
+    cout << "Place orb on (" << i << ", " << j << ")" << endl;
+    cout << "=============================================================" << endl;
+    for (int i = 0; i < ROW; i++)
+    {
+        for (int j = 0; j < COL; j++)
+        {
+
+            symbol = cells[i][j].get_color();
+            switch (symbol)
+            {
+            case 'r':
+                symbol = 'O';
+                break;
+            case 'b':
+                symbol = 'X';
+                break;
+            default:
+                break;
+            }
+
+            orb_num = cells[i][j].get_orbs_num();
+            switch (orb_num)
+            {
+            case 0:
+                cout << "|       | ";
+                break;
+            case 1:
+                cout << "|" << symbol << "      | ";
+                break;
+            case 2:
+                cout << "|" << symbol << symbol << "     | ";
+                break;
+            case 3:
+                cout << "|" << symbol << symbol << symbol << "    | ";
+                break;
+            case 4:
+                cout << "|" << symbol << symbol << symbol << symbol << "   | ";
+                break;
+            case 5:
+                cout << "|" << symbol << symbol << symbol << symbol << symbol << "  | ";
+                break;
+            case 6:
+                cout << "|" << symbol << symbol << symbol << symbol << symbol << symbol << " | ";
+                break;
+            default:
+                cout << "|" << symbol << symbol << symbol << symbol << symbol << symbol << symbol << "| ";
+                break;
+            }
+        }
+        cout << endl;
+    }
+    cout << "=============================================================" << endl
+         << endl;
+}
+
 //----------
+int minimax(Board_c miniboard, int depth, char color, bool master)
+{
+    int bvalue;
+    char enemy = (color == 'r') ? 'b' : 'r';
+    if (depth == 0)
+    {
+        return 0;
+    }
+    if (master == true)
+    {
+        if (miniboard.win_the_game(enemy))
+        {
+            return -1;
+        }
+        else if (miniboard.win_the_game(color))
+        {
+            return 1;
+        }
+        for (int i = 0; i < ROW; i++)
+        {
+            for (int j = 0; j < COL; j++)
+            {
+                if (miniboard.get_cell_color(i, j) == color || miniboard.get_cell_color(i, j) == 'w')
+                {
+                    bvalue = -2;
+                    Board_c tmpboard(miniboard);
+                    miniboard.place_orb(i, j, color);
+                    //miniboard.print_current_board(i,j);
+                    int value = minimax(miniboard, depth - 1, enemy, false);
+                    miniboard.reset_boardc(tmpboard);
+                    //cout << depth << " " << i << " " << j << " 0 " << color << " " << value << endl;
+                    if (bvalue < value)
+                    {
+                        bvalue = value;
+                    }
+                }
+            }
+        }
+        return bvalue;
+    }
+    else
+    {
+        if (miniboard.win_the_game(enemy))
+        {
+            return 1;
+        }
+        else if (miniboard.win_the_game(color))
+        {
+            return -1;
+        }
+        for (int i = 0; i < ROW; i++)
+        {
+            for (int j = 0; j < COL; j++)
+            {
+                if (miniboard.get_cell_color(i, j) == color || miniboard.get_cell_color(i, j) == 'w')
+                {
+                    bvalue = 2;
+                    Board_c tmpboard(miniboard);
+                    miniboard.place_orb(i, j, color);
+                    //miniboard.print_current_board(i,j);
+                    int value = minimax(miniboard, depth - 1, enemy, true);
+                    miniboard.reset_boardc(tmpboard);
+                    //cout << depth << " " << i << " " << j << " 1 " << color << " " << value << endl;
+                    if (bvalue > value)
+                    {
+                        bvalue = value;
+                    }
+                }
+            }
+        }
+        return bvalue;
+    }
+}
 
 void algorithm_A(Board board, Player player, int index[])
 {
 
     //////your algorithm design///////////
+    Board_c mini_board(board);
     srand(time(NULL) * time(NULL));
     int row, col;
     int color = player.get_color();
 
-    while (1)
+    if (mini_board.orb_count <= 30)
     {
-        /*if (board.get_cell_color(0, 0) == color || board.get_cell_color(0, 0) == 'w')
-		{
-			row = 0;
-			col = 0;
-			break;
-		}
-		else if (board.get_cell_color(0, 5) == color || board.get_cell_color(0, 5) == 'w')
-		{
-			row = 0;
-			col = 5;
-			break;
-		}
-		else if (board.get_cell_color(4, 0) == color || board.get_cell_color(4, 0) == 'w')
-		{
-			row = 4;
-			col = 0;
-			break;
-		}
-		else if (board.get_cell_color(4, 5) == color || board.get_cell_color(4, 5) == 'w')
-		{
-			row = 4;
-			col = 5;
-			break;
-		}*/
-
-        row = rand() % 5;
-        col = rand() % 6;
-        if (board.get_cell_color(row, col) == color || board.get_cell_color(row, col) == 'w')
-            break;
+        if (board.get_cell_color(0, 0) == color || board.get_cell_color(0, 0) == 'w')
+        {
+            index[0] = 0;
+            index[1] = 0;
+            return;
+        }
+        else if (board.get_cell_color(4, 5) == color || board.get_cell_color(4, 5) == 'w')
+        {
+            index[0] = 4;
+            index[1] = 5;
+            return;
+        }
+        else if (board.get_cell_color(0, 5) == color || board.get_cell_color(0, 5) == 'w')
+        {
+            index[0] = 0;
+            index[1] = 5;
+            return;
+        }
+        else if (board.get_cell_color(4, 0) == color || board.get_cell_color(4, 0) == 'w')
+        {
+            index[0] = 4;
+            index[1] = 0;
+            return;
+        }
+        else
+        {
+            while (1)
+            {
+                row = rand() % 5;
+                col = rand() % 6;
+                if (board.get_cell_color(row, col) == color || board.get_cell_color(row, col) == 'w')
+                    break;
+            }
+            index[0] = row;
+            index[1] = col;
+            return;
+        }
     }
-
+    int dep = 100;
+    int win = -2;
+    int zero[30] = {0};
+    int zero_count = 0;
+    for (int i = 0; i < ROW; i++)
+    {
+        for (int j = 0; j < COL; j++)
+        {
+            if (board.get_cell_color(i, j) == color || board.get_cell_color(i, j) == 'w')
+            {
+                mini_board.reset_board(board);
+                mini_board.place_orb(i, j, color);
+                int tmp = minimax(mini_board, 3, color, true);
+                if (tmp > win)
+                {
+                    row = i;
+                    col = j;
+                    if (tmp == 0)
+                    {
+                        zero[zero_count] = i * 10 + j;
+                        zero_count++;
+                    }
+                }
+            }
+        }
+    }
+    if (win == 1)
+    {
+        index[0] = row;
+        index[1] = col;
+        return;
+    }
+    else if (win == 0)
+    {
+        int tmp = rand() % zero_count;
+        index[0] = tmp / 10;
+        index[1] = tmp % 10;
+    }
+    else
+    {
+        cout << "Random" << endl;
+        while (1)
+        {
+            row = rand() % 5;
+            col = rand() % 6;
+            if (board.get_cell_color(row, col) == color || board.get_cell_color(row, col) == 'w')
+                break;
+        }
+    }
     index[0] = row;
     index[1] = col;
+    return;
 }
