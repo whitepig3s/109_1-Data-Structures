@@ -55,15 +55,12 @@ private:
 public:
     Board_c(Board board);
     int orb_count;
-    // The basic functions of the Board
     int get_orbs_num(int i, int j);
     int get_capacity(int i, int j);
     char get_cell_color(int i, int j);
     void reset_board(Board board);
     void reset_boardc(Board_c board);
-
     bool place_orb(int i, int j, char color); // Use this function to place a orb into a cell
-    void print_current_board(int i, int j);
     bool win_the_game(char color); // The function that is used to check wether the player wins the game after his/her placemnet operation
 };
 
@@ -278,67 +275,6 @@ void Board_c::reset_boardc(Board_c board)
         }
     }
 }
-
-void Board_c::print_current_board(int i, int j)
-{
-
-    int orb_num;
-    char symbol;
-    cout << "Place orb on (" << i << ", " << j << ")" << endl;
-    cout << "=============================================================" << endl;
-    for (int i = 0; i < ROW; i++)
-    {
-        for (int j = 0; j < COL; j++)
-        {
-
-            symbol = cells[i][j].get_color();
-            switch (symbol)
-            {
-            case 'r':
-                symbol = 'O';
-                break;
-            case 'b':
-                symbol = 'X';
-                break;
-            default:
-                break;
-            }
-
-            orb_num = cells[i][j].get_orbs_num();
-            switch (orb_num)
-            {
-            case 0:
-                cout << "|       | ";
-                break;
-            case 1:
-                cout << "|" << symbol << "      | ";
-                break;
-            case 2:
-                cout << "|" << symbol << symbol << "     | ";
-                break;
-            case 3:
-                cout << "|" << symbol << symbol << symbol << "    | ";
-                break;
-            case 4:
-                cout << "|" << symbol << symbol << symbol << symbol << "   | ";
-                break;
-            case 5:
-                cout << "|" << symbol << symbol << symbol << symbol << symbol << "  | ";
-                break;
-            case 6:
-                cout << "|" << symbol << symbol << symbol << symbol << symbol << symbol << " | ";
-                break;
-            default:
-                cout << "|" << symbol << symbol << symbol << symbol << symbol << symbol << symbol << "| ";
-                break;
-            }
-        }
-        cout << endl;
-    }
-    cout << "=============================================================" << endl
-         << endl;
-}
-
 //----------
 
 int minimax(Board_c miniboard, int depth, char color, bool master)
@@ -347,7 +283,6 @@ int minimax(Board_c miniboard, int depth, char color, bool master)
     char enemy = (color == 'r') ? 'b' : 'r';
     if (depth == 0)
     {
-        //cout<<"0 "<<endl;
         int orb_num = 0;
         for (int i = 0; i < ROW; i++)
         {
@@ -368,8 +303,6 @@ int minimax(Board_c miniboard, int depth, char color, bool master)
         {
             return -orb_num;
         }
-
-        //return 0;
     }
     if (master == true)
     {
@@ -391,11 +324,8 @@ int minimax(Board_c miniboard, int depth, char color, bool master)
                     int value;
                     Board_c tmpboard(miniboard);
                     miniboard.place_orb(i, j, color);
-                    //miniboard.print_current_board(i,j);
-                    //cout << depth << " " << i << " " << j << " 0 " << color << endl;
                     value = minimax(miniboard, depth - 1, enemy, false);
                     miniboard.reset_boardc(tmpboard);
-                    //cout << depth << " " << i << " " << j << " 0 " << color << " " << value << endl;
                     if (bvalue < value)
                     {
                         bvalue = value;
@@ -425,11 +355,8 @@ int minimax(Board_c miniboard, int depth, char color, bool master)
                     int value;
                     Board_c tmpboard(miniboard);
                     miniboard.place_orb(i, j, color);
-                    //miniboard.print_current_board(i,j);
-                    //cout << depth << " " << i << " " << j << " 1 " << color << endl;
                     value = minimax(miniboard, depth - 1, enemy, true);
                     miniboard.reset_boardc(tmpboard);
-                    //cout << depth << " " << i << " " << j << " 1 " << color << " " << value << endl;
                     if (bvalue > value)
                     {
                         bvalue = value;
@@ -490,19 +417,6 @@ void algorithm_A(Board board, Player player, int index[])
             return;
         }
     }
-    if (mini_board.orb_count <= 40)
-    {
-        while (1)
-            {
-                row = rand() % 5;
-                col = rand() % 6;
-                if (board.get_cell_color(row, col) == color || board.get_cell_color(row, col) == 'w')
-                    break;
-            }
-            index[0] = row;
-            index[1] = col;
-            return;
-    }
     int win = -20000;
     for (int i = 0; i < ROW; i++)
     {
@@ -515,7 +429,7 @@ void algorithm_A(Board board, Player player, int index[])
                 int tmp = minimax(mini_board, 3, color, true);
                 if (tmp > win)
                 {
-                    win=tmp;
+                    win = tmp;
                     row = i;
                     col = j;
                 }
